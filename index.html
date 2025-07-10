@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" style="color-scheme: dark;">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>FinCue AI - Subscribe</title>
+    <meta name="description" content="AI stock picks & market insights daily." />
+    <meta name="theme-color" content="#183153" />
+    <link rel="icon" href="logo.png" type="image/png" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+      body {
+        background: linear-gradient(135deg, #101624, #183153);
+        font-family: 'Inter', sans-serif;
+      }
+      .glass {
+        background: rgba(24, 33, 50, 0.8);
+        backdrop-filter: blur(20px);
+        border-radius: 1.25rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      }
+      .gradient-btn {
+        background: linear-gradient(90deg, #2ec4b6, #1a3a5d);
+      }
+      .gradient-btn:hover {
+        background: linear-gradient(90deg, #1a3a5d, #2ec4b6);
+      }
+    </style>
+  </head>
+  <body class="text-white min-h-screen flex flex-col items-center justify-start px-4 py-10">
+    <!-- Subscription Card -->
+    <div class="glass w-full max-w-md p-8 flex flex-col items-center">
+      <h1 class="text-2xl md:text-3xl font-bold text-center mb-3">FinCue AI</h1>
+      <p class="text-gray-300 text-center text-sm md:text-base mb-8">Daily AI-powered stock recommendations and market insights.</p>
+
+      <form id="subscriptionForm" class="w-full space-y-4">
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-300">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="Enter your email" required class="w-full mt-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400" />
+        </div>
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-300">Full Name <span class="text-gray-500 font-light">(Optional)</span></label>
+          <input type="text" id="name" name="name" placeholder="Enter your full name" class="w-full mt-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400" />
+        </div>
+        <button type="submit" class="gradient-btn text-white font-semibold w-full py-2 rounded-md shadow-md hover:shadow-lg transition-all">Subscribe</button>
+      </form>
+
+      <div id="successMessage" class="hidden mt-4 text-teal-300 text-sm bg-teal-900 border border-teal-400 rounded-md px-4 py-2 text-center">🎉 You've been subscribed!</div>
+      <div id="errorMessage" class="hidden mt-4 text-red-300 text-sm bg-red-900 border border-red-500 rounded-md px-4 py-2 text-center">❌ Something went wrong.</div>
+      <div id="loading" class="hidden mt-4 text-sm text-gray-300 flex flex-col items-center">
+        <div class="w-5 h-5 border-2 border-gray-600 border-t-teal-400 rounded-full animate-spin"></div>
+        <p class="mt-2">Subscribing...</p>
+      </div>
+    </div>
+
+    <!-- Why FinCue Section -->
+    <section class="glass mt-10 w-full max-w-4xl p-6 md:p-10">
+      <h2 class="text-xl md:text-2xl font-semibold text-teal-400 text-center mb-6">Why Choose FinCue AI?</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-gray-300">
+        <div class="bg-gray-900 p-4 rounded-lg">
+          <h3 class="text-white font-semibold mb-1">AI-Powered Analysis</h3>
+          <p>Advanced algorithms analyze market data and news to identify opportunities.</p>
+        </div>
+        <div class="bg-gray-900 p-4 rounded-lg">
+          <h3 class="text-white font-semibold mb-1">Daily 6AM Delivery</h3>
+          <p>Get your curated briefings each morning before markets open.</p>
+        </div>
+        <div class="bg-gray-900 p-4 rounded-lg">
+          <h3 class="text-white font-semibold mb-1">Confidence Ratings</h3>
+          <p>Each pick includes a score based on technical analysis and sentiment.</p>
+        </div>
+        <div class="bg-gray-900 p-4 rounded-lg">
+          <h3 class="text-white font-semibold mb-1">Short & Long-Term Picks</h3>
+          <p>Trade momentum or invest long — tailored for all strategies.</p>
+        </div>
+        <div class="bg-gray-900 p-4 rounded-lg">
+          <h3 class="text-white font-semibold mb-1">Risk Management</h3>
+          <p>Watchouts and risk flags help you make informed decisions.</p>
+        </div>
+        <div class="bg-gray-900 p-4 rounded-lg">
+          <h3 class="text-white font-semibold mb-1">Instant Insights</h3>
+          <p>Simplified analysis you can act on within minutes.</p>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const form = document.getElementById('subscriptionForm');
+      const success = document.getElementById('successMessage');
+      const error = document.getElementById('errorMessage');
+      const loading = document.getElementById('loading');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        success.classList.add('hidden');
+        error.classList.add('hidden');
+        loading.classList.remove('hidden');
+
+        const email = document.getElementById('email').value;
+        const name = document.getElementById('name').value;
+
+        try {
+          const res = await fetch(`/api/subscribe`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, name })
+          });
+
+          const result = await res.json();
+          loading.classList.add('hidden');
+
+          if (result.success) {
+            success.classList.remove('hidden');
+            form.reset();
+          } else {
+            error.textContent = '❌ ' + (result.message || 'Something went wrong.');
+            error.classList.remove('hidden');
+          }
+        } catch (err) {
+          loading.classList.add('hidden');
+          error.textContent = '❌ Network error. Please try again.';
+          error.classList.remove('hidden');
+        }
+      });
+    </script>
+  </body>
+</html>
